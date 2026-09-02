@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette from awraquna.com: primary #5D99CE, secondary #879DB4, light bg #F3F5F8, text #212529 */
+  --color-brand-50: #edf4fa;
+  --color-brand-100: #d9e7f5;
+  --color-brand-200: #b5d0ea;
+  --color-brand-300: #8fb8df;
+  --color-brand-400: #74a8d6;
+  --color-brand-500: #5d99ce;
+  --color-brand-600: #4680aa;
+  --color-brand-700: #3a6f96;
+  --color-brand-800: #2f5a7a;
+  --color-brand-900: #274a63;
+  --color-secondary-500: #879db4;
+
+  /* extra-small breakpoint used to swap the full logo lockup for the "A" mark */
+  --breakpoint-xs: 400px;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-arabic: var(--font-tajawal), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #f3f5f8;
+  color: #212529;
+  font-family: var(--font-sans);
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic);
+}
+
+/* Rich HTML coming from the CMS (news bodies, page bodies) */
+.prose-cms > * + * {
+  margin-top: 0.9em;
+}
+.prose-cms h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.prose-cms h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.prose-cms ul {
+  list-style: disc;
+  padding-inline-start: 1.4rem;
+}
+.prose-cms ol {
+  list-style: decimal;
+  padding-inline-start: 1.4rem;
+}
+.prose-cms a {
+  color: #5d99ce;
+  text-decoration: underline;
+}
+.prose-cms img {
+  max-width: 100%;
+  border-radius: 0.75rem;
+}
+
+/* ---------- Page entrance (also replays after a language switch, see layout.tsx) ---------- */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-enter {
+  animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- Language switch: in-place crossfade (View Transitions API) ----------
+   The old page snapshot fades/slides out while the freshly translated page fades/slides in,
+   so the user never sees a blank or "loading" state. The slide direction follows the
+   language being switched to (data-lang-switch is set on <html> only during the switch). */
+@view-transition {
+  navigation: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  mix-blend-mode: normal;
+}
+@keyframes vt-out-left {
+  to { opacity: 0; transform: translateX(-18px); }
+}
+@keyframes vt-out-right {
+  to { opacity: 0; transform: translateX(18px); }
+}
+@keyframes vt-in-left {
+  from { opacity: 0; transform: translateX(-18px); }
+}
+@keyframes vt-in-right {
+  from { opacity: 0; transform: translateX(18px); }
+}
+/* switching to Arabic: content slides out to the left, new (RTL) page slides in from the right */
+html[data-lang-switch="ar"]::view-transition-old(root) { animation-name: vt-out-left; }
+html[data-lang-switch="ar"]::view-transition-new(root) { animation-name: vt-in-right; }
+/* switching to English: the mirror image */
+html[data-lang-switch="en"]::view-transition-old(root) { animation-name: vt-out-right; }
+html[data-lang-switch="en"]::view-transition-new(root) { animation-name: vt-in-left; }
+/* the sticky header just crossfades so the logo does not jump */
+header {
+  view-transition-name: site-header;
+}
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  animation-duration: 0.3s;
+}
+
+/* ---------- Mobile drawer: staggered link entrance ---------- */
+.drawer-item {
+  opacity: 0;
+  transform: translateX(16px);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[dir="rtl"] .drawer-item {
+  transform: translateX(-16px);
+}
+.drawer-item-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+  .drawer-item {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
