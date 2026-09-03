@@ -28,7 +28,9 @@ export default function BestSellersTabs({ areas, products, locale, labels }: Pro
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap justify-center gap-2" role="tablist">
+      {/* Segmented control on a recessed track — the same shape language as the
+          nav pill and the language switch. */}
+      <div className="mx-auto mb-8 flex w-fit max-w-full flex-wrap justify-center gap-1.5 rounded-[26px] border border-border bg-surface-2 p-1.5" role="tablist">
         {tabs.map((t) => (
           <button
             key={t.slug}
@@ -37,10 +39,10 @@ export default function BestSellersTabs({ areas, products, locale, labels }: Pro
             aria-selected={active === t.slug}
             onClick={() => setActive(t.slug)}
             className={cx(
-              "rounded-full border px-4 py-1.5 text-sm font-medium transition",
+              "rounded-full px-4 py-2 text-sm font-medium transition-all duration-300",
               active === t.slug
-                ? "border-brand-600 bg-brand-600 text-white"
-                : "border-gray-200 bg-white text-gray-600 hover:border-brand-400 hover:text-brand-700",
+                ? "bg-brand-600 text-white shadow-[0_8px_20px_-10px_var(--brand-600)] dark:text-[#0a1017]"
+                : "text-muted-foreground hover:bg-surface hover:text-foreground",
             )}
           >
             {t.name}

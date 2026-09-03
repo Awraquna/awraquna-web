@@ -103,7 +103,7 @@ export default function LanguageToggle({ locale, label, variant = "pill", classN
 
   if (variant === "wide") {
     return (
-      <div className={cx("grid grid-cols-2 gap-1 rounded-xl bg-gray-100 p-1", className)} role="group" aria-label={label}>
+      <div className={cx("grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1", className)} role="group" aria-label={label}>
         {(["en", "ar"] as Locale[]).map((l) => (
           <button
             key={l}
@@ -113,7 +113,7 @@ export default function LanguageToggle({ locale, label, variant = "pill", classN
             aria-pressed={shown === l}
             className={cx(
               "rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-300",
-              shown === l ? "bg-white text-brand-700 shadow-sm" : "text-gray-500 hover:text-gray-800",
+              shown === l ? "bg-surface text-brand-700 shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {NAMES[l]}
@@ -131,7 +131,7 @@ export default function LanguageToggle({ locale, label, variant = "pill", classN
       aria-label={label ?? `Switch language to ${NAMES[next]}`}
       onClick={() => switchTo(next)}
       className={cx(
-        "group relative inline-flex h-9 w-[104px] shrink-0 select-none items-center rounded-full border border-gray-200 bg-gray-100 p-1 text-xs font-semibold transition-colors hover:border-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60",
+        "group relative inline-flex h-10 w-[104px] shrink-0 select-none items-center rounded-full border border-border bg-surface-2 p-1 text-xs font-semibold transition-colors hover:border-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60",
         className,
       )}
     >
@@ -139,14 +139,14 @@ export default function LanguageToggle({ locale, label, variant = "pill", classN
       <span
         aria-hidden="true"
         className={cx(
-          "absolute top-1 bottom-1 start-1 w-[calc(50%-4px)] rounded-full bg-white shadow-[0_1px_3px_rgba(31,56,83,.25)] transition-transform duration-300 ease-[cubic-bezier(.22,1,.36,1)]",
+          "absolute top-1 bottom-1 start-1 w-[calc(50%-4px)] rounded-full bg-surface shadow-[0_1px_3px_rgba(31,56,83,.25)] transition-transform duration-300 ease-[cubic-bezier(.22,1,.36,1)]",
           shown === "ar" ? "translate-x-full rtl:-translate-x-full" : "translate-x-0",
         )}
       />
-      <span lang="en" className={cx("relative z-10 flex-1 text-center transition-colors duration-300", shown === "en" ? "text-brand-700" : "text-gray-500")}>
+      <span lang="en" className={cx("relative z-10 flex-1 text-center transition-colors duration-300", shown === "en" ? "text-brand-700" : "text-muted-foreground")}>
         EN
       </span>
-      <span lang="ar" className={cx("relative z-10 flex-1 text-center transition-colors duration-300", shown === "ar" ? "text-brand-700" : "text-gray-500")}>
+      <span lang="ar" className={cx("relative z-10 flex-1 text-center transition-colors duration-300", shown === "ar" ? "text-brand-700" : "text-muted-foreground")}>
         عربي
       </span>
     </button>

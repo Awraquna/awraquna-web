@@ -15,14 +15,20 @@ export default function NewsCard({ post, locale, showImage = true }: Props) {
   const href = `/news/${post.slug}`;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_28px_60px_-32px_rgb(16_24_40_/_0.45)]">
       {showImage ? (
         <Link href={href} aria-label={title}>
-          <AppImage src={post.coverImageUrl} alt={title} className="aspect-[16/9] w-full" icon="news" />
+          <AppImage
+            src={post.coverImageUrl}
+            alt={title}
+            className="aspect-[16/9] w-full overflow-hidden"
+            imgClassName="transition-transform duration-500 group-hover:scale-105"
+            icon="news"
+          />
         </Link>
       ) : null}
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground/70">
           {tag ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 font-medium text-brand-700">
               <Icon name="tag" size={12} />
@@ -42,15 +48,15 @@ export default function NewsCard({ post, locale, showImage = true }: Props) {
             </span>
           ) : null}
         </div>
-        <h3 className="mt-3 text-lg font-semibold leading-snug text-gray-900">
-          <Link href={href} className="hover:text-brand-700">
+        <h3 className="mt-3 text-lg font-semibold leading-snug text-foreground">
+          <Link href={href} className="transition-colors hover:text-brand-600">
             {title}
           </Link>
         </h3>
-        {excerpt ? <p className="mt-2 line-clamp-3 text-sm text-gray-500">{excerpt}</p> : null}
-        <Link href={href} className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-brand-700 hover:underline">
+        {excerpt ? <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{excerpt}</p> : null}
+        <Link href={href} className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-brand-600 hover:underline">
           {dict.actions.read}
-          <Icon name="arrow-right" size={14} className="rtl:rotate-180" />
+          <Icon name="arrow-right" size={14} className="transition-transform group-hover:translate-x-0.5 rtl:rotate-180" />
         </Link>
       </div>
     </article>

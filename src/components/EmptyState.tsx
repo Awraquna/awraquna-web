@@ -12,15 +12,19 @@ export default function EmptyState({ title, hint, icon = "box", compact }: Props
     <div
       className={
         compact
-          ? "rounded-xl border border-dashed border-gray-300 bg-white px-6 py-8 text-center"
-          : "rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center"
+          ? "rounded-2xl border border-dashed border-border bg-surface px-6 py-8 text-center"
+          : "rounded-3xl border border-dashed border-border bg-surface px-6 py-16 text-center"
       }
     >
-      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-        <Icon name={icon} size={24} />
+      {/* Halo behind the glyph so the empty state still feels designed. */}
+      <div className="relative mx-auto mb-4 flex h-14 w-14 items-center justify-center">
+        <span aria-hidden="true" className="absolute inset-0 rounded-full bg-[var(--brand-soft)] blur-md" />
+        <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+          <Icon name={icon} size={24} />
+        </span>
       </div>
-      <p className="text-base font-semibold text-gray-800">{title}</p>
-      {hint ? <p className="mt-1 text-sm text-gray-500">{hint}</p> : null}
+      <p className="text-base font-semibold text-foreground">{title}</p>
+      {hint ? <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

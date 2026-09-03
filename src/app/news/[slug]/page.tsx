@@ -57,7 +57,7 @@ export default async function NewsDetailPage({ params }: Params) {
       <div className="mb-6">{back}</div>
 
       <header>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           {tag ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 font-medium text-brand-700">
               <Icon name="tag" size={12} />
@@ -77,14 +77,14 @@ export default async function NewsDetailPage({ params }: Params) {
             </span>
           ) : null}
         </div>
-        <h1 className="mt-3 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">{title}</h1>
-        {excerpt ? <p className="mt-3 text-lg text-gray-500">{excerpt}</p> : null}
+        <h1 className="mt-3 text-3xl font-bold leading-tight text-foreground sm:text-4xl">{title}</h1>
+        {excerpt ? <p className="mt-3 text-lg text-muted-foreground">{excerpt}</p> : null}
       </header>
 
       {post.coverImageUrl ? <AppImage src={post.coverImageUrl} alt={title} className="mt-8 aspect-[16/9] w-full rounded-2xl" /> : null}
 
       {body ? (
-        <div className="prose-cms mt-8 rounded-2xl border border-gray-200 bg-white p-6 leading-relaxed text-gray-700 sm:p-8" dangerouslySetInnerHTML={{ __html: body }} />
+        <div className="prose-cms mt-8 rounded-2xl border border-border bg-surface p-6 leading-relaxed text-foreground sm:p-8" dangerouslySetInnerHTML={{ __html: body }} />
       ) : null}
 
       <div className="mt-10">{back}</div>

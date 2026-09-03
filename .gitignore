@@ -40,5 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# keep the example env file
+# Keep the example plus the per-environment defaults. These hold public URLs
+# only — real secrets belong in the host's environment variables, and personal
+# overrides belong in the (still ignored) .env.local.
 !.env.local.example
+!.env.development
+!.env.production
+
+# Local Netlify folder
+.netlify

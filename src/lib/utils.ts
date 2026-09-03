@@ -1,13 +1,21 @@
 import type { ContentSection, Locale } from "./types";
 
-/** pick(obj, "name", "ar") returns obj.nameAr when present, otherwise obj.nameEn. */
+/**
+ * pick(obj, "name", "ar") returns obj.nameAr when present, otherwise obj.nameEn.
+ *
+ * Two key shapes are in play and both must work: the entity DTOs are camelCase
+ * (`nameEn` / `nameAr`), while the settings bag is a flat key/value table keyed
+ * snake_case (`address_en` / `address_ar`). Checking both is what makes
+ * `pick(settings, "address", locale)` resolve — without the snake_case fallback
+ * the address, working hours, footer text and copyright all render empty.
+ */
 export function pick(obj: unknown, field: string, locale: Locale): string {
   if (!obj || typeof obj !== "object") return "";
   const o = obj as Record<string, unknown>;
-  const ar = o[`${field}Ar`];
-  const en = o[`${field}En`];
-  const v = locale === "ar" && typeof ar === "string" && ar.trim() ? ar : en;
-  return typeof v === "string" ? v : "";
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : "");
+  const ar = str(o[`${field}Ar`]) || str(o[`${field}_ar`]);
+  const en = str(o[`${field}En`]) || str(o[`${field}_en`]);
+  return (locale === "ar" && ar) || en;
 }
 
 export function sectionBy(sections: ContentSection[] | null | undefined, key: string): ContentSection | undefined {

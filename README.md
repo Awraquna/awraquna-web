@@ -11,8 +11,7 @@ Next.js (App Router, TypeScript, Tailwind 4) re-make of awraquna.com. All conten
 
 ```bash
 npm install
-copy .env.local.example .env.local   # then edit NEXT_PUBLIC_API_URL if needed
-npm run dev                          # http://localhost:3000
+npm run dev                          # http://localhost:3000, API on :5200
 ```
 
 Production:
@@ -24,9 +23,21 @@ npm start
 
 ## Environment
 
-| Variable              | Default                 | Purpose                                              |
-| --------------------- | ----------------------- | ---------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:5200` | API base URL; relative `/uploads/..` images use it   |
+| Variable              | Dev                     | Production                    | Purpose                                            |
+| --------------------- | ----------------------- | ----------------------------- | -------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5200` | `https://awraquna.runasp.net` | API base URL; relative `/uploads/..` images use it  |
+| `REVALIDATE_SECONDS`  | `0` (always fresh)      | `60`                          | How long API responses are cached                  |
+
+Both files are committed: `.env.development` (loaded by `next dev`) and
+`.env.production` (loaded by `next build` / `next start`). Neither holds a secret.
+
+Personal overrides go in `.env.local`, which stays gitignored — but note that Next
+loads it in **every** environment and it outranks `.env.production`. Do not pin
+`NEXT_PUBLIC_API_URL` to localhost there: a production build on that machine would
+silently ship localhost to the browser. Use `.env.development` for dev defaults.
+
+`NEXT_PUBLIC_API_URL` is inlined into the client bundle at **build** time, so it
+has to be correct when `npm run build` runs, not when the server starts.
 
 ## Structure
 

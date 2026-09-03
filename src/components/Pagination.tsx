@@ -25,10 +25,10 @@ export default function Pagination({ basePath, params, page, pageSize, total, di
   for (let p = start; p <= end; p++) window.push(p);
 
   const btn =
-    "inline-flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition";
-  const normal = "border-gray-200 bg-white text-gray-700 hover:border-brand-400 hover:text-brand-700";
-  const active = "border-brand-600 bg-brand-600 text-white";
-  const disabled = "border-gray-100 bg-gray-50 text-gray-300 pointer-events-none";
+    "inline-flex h-10 min-w-10 items-center justify-center rounded-full border px-4 text-sm font-medium transition-all";
+  const normal = "border-border bg-surface text-foreground hover:border-brand-400 hover:text-brand-700";
+  const active = "border-brand-600 bg-brand-600 text-white dark:text-[#0a1017]";
+  const disabled = "border-border bg-surface-2 text-muted-foreground/50 pointer-events-none opacity-70";
 
   return (
     <nav className="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
@@ -40,7 +40,7 @@ export default function Pagination({ basePath, params, page, pageSize, total, di
           <Link href={href(1)} className={cx(btn, normal)}>
             1
           </Link>
-          {start > 2 ? <span className="px-1 text-gray-400">…</span> : null}
+          {start > 2 ? <span className="px-1 text-muted-foreground/70">…</span> : null}
         </>
       ) : null}
       {window.map((p) => (
@@ -50,7 +50,7 @@ export default function Pagination({ basePath, params, page, pageSize, total, di
       ))}
       {end < pages ? (
         <>
-          {end < pages - 1 ? <span className="px-1 text-gray-400">…</span> : null}
+          {end < pages - 1 ? <span className="px-1 text-muted-foreground/70">…</span> : null}
           <Link href={href(pages)} className={cx(btn, normal)}>
             {pages}
           </Link>

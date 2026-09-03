@@ -1,0 +1,15 @@
+# Netlify runs this app as a real Next.js server (SSR + server components), not as
+# static files. Netlify's Next.js Runtime is installed automatically when it
+# detects Next, so there is no plugin to declare here.
+#
+# Deliberately NO `output` key in next.config.ts: `export` would break the
+# cookie-based EN/AR locale and the live product data, and `standalone` conflicts
+# with the runtime's own bundling. The default output is what Netlify wants.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Match the local toolchain (Next 16 needs >= 20.9).
+  NODE_VERSION = "22"

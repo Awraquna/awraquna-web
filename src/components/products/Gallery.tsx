@@ -14,12 +14,12 @@ export default function Gallery({ images, alt }: Props) {
 
   return (
     <div>
-      <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white">
+      <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-3xl border border-border bg-surface shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)]">
         {current ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={current} alt={alt} className="h-full w-full object-contain" />
+          <img src={current} alt={alt} className="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-[1.04]" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-300">
+          <div className="flex h-full w-full items-center justify-center bg-surface-2 text-muted-foreground/50">
             <Icon name="box" size={64} />
           </div>
         )}
@@ -33,8 +33,8 @@ export default function Gallery({ images, alt }: Props) {
               onClick={() => setIndex(i)}
               aria-label={`${alt} ${i + 1}`}
               className={cx(
-                "h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-white transition",
-                i === index ? "border-brand-600" : "border-gray-200 hover:border-brand-300",
+                "h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-surface transition-all duration-300",
+                i === index ? "border-brand-600 shadow-[0_8px_18px_-10px_var(--brand-600)]" : "border-border hover:-translate-y-0.5 hover:border-brand-300",
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

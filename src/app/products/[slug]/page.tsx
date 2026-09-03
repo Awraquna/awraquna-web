@@ -64,7 +64,7 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <nav className="mb-6 flex flex-wrap items-center gap-1 text-sm text-gray-500" aria-label="Breadcrumb">
+      <nav className="mb-6 flex flex-wrap items-center gap-1 text-sm text-muted-foreground" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-brand-700">
           {dict.nav.home}
         </Link>
@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: Params) {
           </>
         ) : null}
         <Icon name="chevron-right" size={14} className="rtl:rotate-180" />
-        <span className="text-gray-800">{name}</span>
+        <span className="text-foreground">{name}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
@@ -92,30 +92,30 @@ export default async function ProductPage({ params }: Params) {
             {category ? (
               <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">{category}</span>
             ) : null}
-            {subCategory ? <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">{subCategory}</span> : null}
+            {subCategory ? <span className="rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted-foreground">{subCategory}</span> : null}
           </div>
-          <h1 className="mt-3 text-3xl font-bold text-gray-900">{name}</h1>
+          <h1 className="mt-3 text-3xl font-bold text-foreground">{name}</h1>
           {p.sku ? (
-            <p className="mt-2 text-sm text-gray-400">
-              {dict.common.sku}: <span className="font-mono text-gray-600">{p.sku}</span>
+            <p className="mt-2 text-sm text-muted-foreground/70">
+              {dict.common.sku}: <span className="font-mono text-muted-foreground">{p.sku}</span>
             </p>
           ) : null}
 
-          <p className="mt-5 text-2xl font-bold text-gray-900">
+          <p className="mt-5 text-2xl font-bold text-foreground">
             {price ? (
               <>
                 {price}
-                {p.unit ? <span className="ms-2 text-sm font-normal text-gray-400">/ {p.unit}</span> : null}
+                {p.unit ? <span className="ms-2 text-sm font-normal text-muted-foreground/70">/ {p.unit}</span> : null}
               </>
             ) : (
               <span className="text-brand-700">{dict.common.quoteOnRequest}</span>
             )}
           </p>
 
-          {shortDesc ? <p className="mt-4 text-gray-600">{shortDesc}</p> : null}
+          {shortDesc ? <p className="mt-4 text-muted-foreground">{shortDesc}</p> : null}
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href={quoteHref} className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
+            <Link href={quoteHref} className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white dark:text-[#0a1017] transition hover:bg-brand-700">
               <Icon name="mail" size={16} />
               {dict.actions.requestQuote}
             </Link>
@@ -134,13 +134,13 @@ export default async function ProductPage({ params }: Params) {
 
           {p.businessAreas?.length ? (
             <div className="mt-8">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">{dict.common.suitableFor}</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground/70">{dict.common.suitableFor}</p>
               <div className="flex flex-wrap gap-2">
                 {p.businessAreas.map((a) => (
                   <Link
                     key={a.id}
                     href={`/products?area=${encodeURIComponent(a.slug)}`}
-                    className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:border-brand-400 hover:text-brand-700"
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:border-brand-400 hover:text-brand-700"
                   >
                     <Icon name="building" size={12} />
                     {pick(a, "name", locale)}
@@ -151,16 +151,16 @@ export default async function ProductPage({ params }: Params) {
           ) : null}
 
           {specs.length ? (
-            <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-              <h2 className="border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-semibold text-gray-800">{dict.common.specs}</h2>
+            <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-surface">
+              <h2 className="border-b border-border bg-surface-2 px-4 py-2.5 text-sm font-semibold text-foreground">{dict.common.specs}</h2>
               <table className="w-full text-sm">
                 <tbody>
                   {specs.map((s) => (
-                    <tr key={s.id} className="border-b border-gray-100 last:border-0">
-                      <th scope="row" className="w-1/3 px-4 py-2.5 text-start font-medium text-gray-500">
+                    <tr key={s.id} className="border-b border-border last:border-0">
+                      <th scope="row" className="w-1/3 px-4 py-2.5 text-start font-medium text-muted-foreground">
                         {pick(s, "label", locale)}
                       </th>
-                      <td className="px-4 py-2.5 text-gray-900">{pick(s, "value", locale)}</td>
+                      <td className="px-4 py-2.5 text-foreground">{pick(s, "value", locale)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -171,15 +171,15 @@ export default async function ProductPage({ params }: Params) {
       </div>
 
       {description ? (
-        <section className="mt-12 rounded-2xl border border-gray-200 bg-white p-6">
-          <h2 className="mb-3 text-lg font-semibold text-gray-900">{dict.common.description}</h2>
-          <div className="prose-cms text-gray-600" dangerouslySetInnerHTML={{ __html: description }} />
+        <section className="mt-12 rounded-2xl border border-border bg-surface p-6">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">{dict.common.description}</h2>
+          <div className="prose-cms text-muted-foreground" dangerouslySetInnerHTML={{ __html: description }} />
         </section>
       ) : null}
 
       {p.related?.length ? (
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">{dict.common.related}</h2>
+          <h2 className="mb-6 text-2xl font-bold text-foreground">{dict.common.related}</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {p.related.map((r) => (
               <ProductCard key={r.id} product={r} locale={locale} />

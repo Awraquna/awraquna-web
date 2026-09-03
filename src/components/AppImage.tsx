@@ -22,7 +22,7 @@ export default function AppImage({ src, alt, className, imgClassName, icon = "im
     return (
       <div
         className={cx(
-          "flex items-center justify-center bg-gray-100 text-gray-300 border border-gray-200/70",
+          "flex items-center justify-center bg-surface-2 text-muted-foreground/50 border border-border",
           className,
         )}
         role="img"
@@ -33,7 +33,7 @@ export default function AppImage({ src, alt, className, imgClassName, icon = "im
     );
   }
   return (
-    <div className={cx("overflow-hidden bg-gray-100", className)}>
+    <div className={cx("overflow-hidden bg-surface-2", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={url} alt={alt} loading="lazy" className={cx("h-full w-full object-cover", imgClassName)} />
     </div>

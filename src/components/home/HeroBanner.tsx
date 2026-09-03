@@ -6,25 +6,29 @@ import type { Banner, Locale } from "@/lib/types";
 import { imageUrl } from "@/lib/api";
 import { cx, pick } from "@/lib/utils";
 import Icon from "@/components/Icon";
+import Container from "@/components/ui/Container";
 
 type Props = {
   banners: Banner[];
   locale: Locale;
   fallback: { title: string; subtitle: string; ctaText: string; ctaUrl: string };
+  labels: { secondaryCta: string; secondaryHref: string; badge: string };
 };
 
 const AUTOPLAY_MS = 6000;
 
 /**
- * Hero slider built for speed:
- *  - every slide stays mounted and stacked; switching only toggles opacity (GPU compositing,
- *    no layout, no image re-request, no flash);
- *  - the first image is fetched with high priority and decoded off the main thread; the others
- *    load lazily after the page is interactive;
- *  - autoplay pauses while the tab is hidden, while hovered/focused, and for reduced-motion users;
- *  - swipe on touch, arrow keys on desktop, prev/next buttons and dots.
+ * Home hero — a split layout: the campaign copy on one side, the banner artwork
+ * floating in a rounded card on the other, over a soft brand-lit grid.
+ *
+ * Built for speed: every slide stays mounted and stacked, so switching only
+ * toggles opacity (GPU compositing — no layout, no image re-request, no flash).
+ * The first image is fetched with high priority and decoded off the main thread;
+ * the rest load lazily. Autoplay pauses while the tab is hidden, while the hero
+ * is hovered or focused, and for reduced-motion visitors. Swipe on touch, arrow
+ * keys on desktop, prev/next buttons and dots.
  */
-export default function HeroBanner({ banners, locale, fallback }: Props) {
+export default function HeroBanner({ banners, locale, fallback, labels }: Props) {
   const slides = banners.length
     ? banners.map((b) => ({
         id: b.id,
@@ -87,9 +91,12 @@ export default function HeroBanner({ banners, locale, fallback }: Props) {
     else prev();
   };
 
+  const active = slides[index];
+  const hasArt = slides.some((s) => s.image);
+
   return (
     <section
-      className="group relative overflow-hidden bg-brand-800 text-white"
+      className="relative isolate overflow-hidden border-b border-border bg-background"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -99,104 +106,174 @@ export default function HeroBanner({ banners, locale, fallback }: Props) {
       onTouchEnd={onTouchEnd}
       aria-roledescription="carousel"
     >
-      {/* Backgrounds: all mounted, only opacity changes. */}
-      {slides.map((s, i) =>
-        s.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={s.id}
-            src={s.image}
-            alt=""
-            aria-hidden="true"
-            loading={i === 0 ? "eager" : "lazy"}
-            fetchPriority={i === 0 ? "high" : "low"}
-            decoding="async"
-            draggable={false}
-            className={cx(
-              "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out will-change-[opacity]",
-              i === index ? "opacity-30" : "opacity-0",
-            )}
-          />
-        ) : (
-          <div
-            key={s.id}
-            aria-hidden="true"
-            className={cx(
-              "absolute inset-0 bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 transition-opacity duration-700 ease-out",
-              i === index ? "opacity-100" : "opacity-0",
-            )}
-          />
-        ),
-      )}
-      <div className="pointer-events-none absolute -end-24 -top-24 h-72 w-72 rounded-full bg-brand-500/30 blur-3xl" />
+      {/* Ambient layer: a faint grid, two drifting brand glows, both masked so
+          they fade out before they reach an edge. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="bg-grid mask-fade absolute inset-0 opacity-60" />
+        <div className="animate-aurora absolute -top-32 start-[-8%] h-[26rem] w-[26rem] rounded-full bg-[var(--brand-soft)] blur-3xl" />
+        <div
+          className="animate-aurora absolute -bottom-40 end-[-6%] h-[24rem] w-[24rem] rounded-full bg-[var(--brand-soft)] blur-3xl"
+          style={{ animationDelay: "-8s" }}
+        />
+      </div>
 
-      {/* Text: slides stacked in a grid cell so the tallest one sets the height (no jump). */}
-      <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <Container className="relative grid items-center gap-10 py-14 lg:grid-cols-2 lg:gap-14 lg:py-20">
+        {/* ---- Copy. Slides are stacked in one grid cell so the tallest sets the
+             height and nothing jumps between them. ---- */}
         <div className="grid">
           {slides.map((s, i) => {
-            const active = i === index;
+            const on = i === index;
             return (
               <div
                 key={s.id}
-                aria-hidden={!active}
+                aria-hidden={!on}
                 className={cx(
-                  "col-start-1 row-start-1 flex flex-col items-start gap-6 transition-[opacity,transform] duration-500 ease-out",
-                  active ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 translate-y-2",
+                  "col-start-1 row-start-1 flex flex-col items-start transition-[opacity,transform] duration-500 ease-out",
+                  on ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0",
                 )}
               >
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-brand-100 ring-1 ring-white/20">
-                  <Icon name="award" size={14} />
-                  Saudi Arabia
+                <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700">
+                  <Icon name="sparkles" size={14} />
+                  {labels.badge}
                 </span>
-                <h1 className="max-w-3xl text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{s.title}</h1>
-                {s.subtitle ? <p className="max-w-2xl text-base text-brand-100 sm:text-lg">{s.subtitle}</p> : null}
-                <Link
-                  href={s.url}
-                  tabIndex={active ? 0 : -1}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-brand-800 shadow transition hover:bg-brand-50"
-                >
-                  {s.cta}
-                  <Icon name="arrow-right" size={16} className="rtl:rotate-180" />
-                </Link>
+
+                <h1 className="mt-5 max-w-2xl text-3xl font-extrabold leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-[3.25rem]">
+                  <Accented text={s.title} />
+                </h1>
+
+                {s.subtitle ? (
+                  <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{s.subtitle}</p>
+                ) : null}
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link
+                    href={s.url}
+                    tabIndex={on ? 0 : -1}
+                    className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_34px_-14px_var(--brand-600)] transition-all hover:bg-brand-700 hover:shadow-[0_20px_44px_-14px_var(--brand-600)] dark:text-[#0a1017]"
+                  >
+                    {s.cta}
+                    <Icon name="arrow-right" size={16} className="rtl:rotate-180" />
+                  </Link>
+                  <Link
+                    href={labels.secondaryHref}
+                    tabIndex={on ? 0 : -1}
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-6 py-3.5 text-sm font-semibold text-foreground transition-colors hover:border-brand-400 hover:text-brand-600"
+                  >
+                    <Icon name="headset" size={16} />
+                    {labels.secondaryCta}
+                  </Link>
+                </div>
               </div>
             );
           })}
+
+          {count > 1 ? (
+            <div className="col-start-1 row-start-2 mt-10 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={prev}
+                aria-label="Previous slide"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground transition-colors hover:border-brand-400 hover:text-brand-600"
+              >
+                <Icon name="chevron-right" size={16} className="rotate-180 rtl:rotate-0" />
+              </button>
+              <div className="flex gap-2" role="tablist" aria-label="Slides">
+                {slides.map((s, i) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === index}
+                    aria-label={`Slide ${i + 1}`}
+                    onClick={() => go(i)}
+                    className={cx(
+                      "h-2 rounded-full transition-all duration-300",
+                      i === index ? "w-8 bg-brand-600" : "w-2 bg-border hover:bg-brand-300",
+                    )}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={next}
+                aria-label="Next slide"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground transition-colors hover:border-brand-400 hover:text-brand-600"
+              >
+                <Icon name="chevron-right" size={16} className="rtl:rotate-180" />
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        {count > 1 ? (
-          <div className="mt-8 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Previous slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-            >
-              <Icon name="chevron-right" size={16} className="rotate-180 rtl:rotate-0" />
-            </button>
-            <div className="flex gap-2" role="tablist" aria-label="Slides">
-              {slides.map((s, i) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={i === index}
-                  aria-label={`Slide ${i + 1}`}
-                  onClick={() => go(i)}
-                  className={cx("h-2.5 rounded-full transition-all duration-300", i === index ? "w-8 bg-white" : "w-2.5 bg-white/40 hover:bg-white/70")}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Next slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-            >
-              <Icon name="chevron-right" size={16} className="rtl:rotate-180" />
-            </button>
+        {/* ---- Artwork ---- */}
+        <div className="relative">
+          <div className="animate-float relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(16_24_40_/_0.45)] lg:aspect-[5/4]">
+            {hasArt ? (
+              slides.map((s, i) =>
+                s.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={s.id}
+                    src={s.image}
+                    alt=""
+                    aria-hidden="true"
+                    loading={i === 0 ? "eager" : "lazy"}
+                    fetchPriority={i === 0 ? "high" : "low"}
+                    decoding="async"
+                    draggable={false}
+                    className={cx(
+                      "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
+                      i === index ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                ) : null,
+              )
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface to-brand-100" />
+            )}
+            {!hasArt ? (
+              <div className="absolute inset-0 flex items-center justify-center text-brand-300">
+                <Icon name="printer" size={96} strokeWidth={1} />
+              </div>
+            ) : null}
+            {/* A whisper of brand over the photo so it belongs to the palette. */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-900/25 via-transparent to-transparent" />
           </div>
-        ) : null}
-      </div>
+
+          {/* Floating chip naming the campaign currently on show. Only earns its
+              place when there is more than one slide to keep track of. */}
+          {count > 1 ? (
+            <div className="absolute -bottom-4 start-4 hidden max-w-[75%] items-center gap-3 rounded-2xl border border-border bg-surface/90 px-4 py-3 shadow-lg backdrop-blur-md sm:flex">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white dark:text-[#0a1017]">
+                <Icon name="sparkles" size={18} />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-foreground">{active.cta}</span>
+                <span className="block truncate text-xs text-muted-foreground" dir="ltr">
+                  {index + 1} / {count}
+                </span>
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </Container>
     </section>
+  );
+}
+
+/**
+ * Paints the last two words of the headline with the brand gradient. Purely
+ * typographic emphasis — the whole string still reads as one sentence to a
+ * screen reader.
+ */
+function Accented({ text }: { text: string }) {
+  const words = text.trim().split(/\s+/);
+  if (words.length < 4) return <>{text}</>;
+  const head = words.slice(0, -2).join(" ");
+  const tail = words.slice(-2).join(" ");
+  return (
+    <>
+      {head} <span className="text-gradient">{tail}</span>
+    </>
   );
 }

@@ -24,7 +24,7 @@ type Props = {
 type Status = "idle" | "sending" | "success" | "error";
 
 const inputCls =
-  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30";
+  "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30";
 
 export default function ContactForm({ initialSubject = "", labels }: Props) {
   const [status, setStatus] = useState<Status>("idle");
@@ -64,7 +64,7 @@ export default function ContactForm({ initialSubject = "", labels }: Props) {
   if (status === "success") {
     return (
       <div className="rounded-2xl border border-brand-200 bg-brand-50 p-8 text-center">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white dark:text-[#0a1017]">
           <Icon name="check" size={24} />
         </div>
         <p className="font-semibold text-brand-800">{labels.success}</p>
@@ -120,7 +120,7 @@ export default function ContactForm({ initialSubject = "", labels }: Props) {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white dark:text-[#0a1017] transition hover:bg-brand-700 disabled:opacity-60"
       >
         <Icon name="mail" size={16} />
         {status === "sending" ? labels.sending : labels.send}
@@ -132,7 +132,7 @@ export default function ContactForm({ initialSubject = "", labels }: Props) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-gray-700">
+      <span className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
         {required ? <span className="ms-0.5 text-red-500">*</span> : null}
       </span>

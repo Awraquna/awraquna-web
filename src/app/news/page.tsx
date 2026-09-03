@@ -7,6 +7,9 @@ import { getDict } from "@/i18n";
 import NewsCard from "@/components/NewsCard";
 import Pagination from "@/components/Pagination";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
+import Container from "@/components/ui/Container";
+import Reveal from "@/components/ui/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +27,9 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const items = news?.items ?? [];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{dict.common.newsTitle}</h1>
-        <p className="mt-1 text-gray-500">{dict.common.newsSubtitle}</p>
-      </div>
+    <>
+      <PageHeader eyebrow={dict.nav.news} icon="news" title={dict.common.newsTitle} subtitle={dict.common.newsSubtitle} size="sm" />
+      <Container size="md" className="py-10 lg:py-14">
 
       {!news ? (
         <EmptyState title={dict.common.notAvailable} hint={dict.common.notAvailableHint} icon="news" />
@@ -36,16 +37,19 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         <EmptyState title={dict.common.noNews} icon="news" />
       ) : (
         <ol className="relative space-y-6 border-s-2 border-brand-100 ps-6 sm:ps-8">
-          {items.map((n) => (
+          {items.map((n, i) => (
             <li key={n.id} className="relative">
-              <span className="absolute -start-[calc(1.5rem+5px)] top-6 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-white sm:-start-[calc(2rem+5px)]" />
-              <NewsCard post={n} locale={locale} showImage={!!n.coverImageUrl} />
+              <span className="absolute -start-[calc(1.5rem+5px)] top-6 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-background sm:-start-[calc(2rem+5px)]" />
+              <Reveal dir="start" delay={(i % 4) * 70}>
+                <NewsCard post={n} locale={locale} showImage={!!n.coverImageUrl} />
+              </Reveal>
             </li>
           ))}
         </ol>
       )}
 
-      <Pagination basePath="/news" params={{}} page={page} pageSize={news?.pageSize || PAGE_SIZE} total={news?.total ?? 0} dict={dict} />
-    </div>
+        <Pagination basePath="/news" params={{}} page={page} pageSize={news?.pageSize || PAGE_SIZE} total={news?.total ?? 0} dict={dict} />
+      </Container>
+    </>
   );
 }

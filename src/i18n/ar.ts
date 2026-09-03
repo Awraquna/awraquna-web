@@ -32,6 +32,7 @@ const ar: Dictionary = {
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
     switchLanguage: "English",
+    toggleTheme: "تبديل المظهر",
   },
   common: {
     quoteOnRequest: "اطلب عرض سعر",
@@ -77,6 +78,10 @@ const ar: Dictionary = {
     pageNotFound: "الصفحة غير موجودة",
     pageNotFoundHint: "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
     products: "منتجات",
+    needHelp: "تحتاج مساعدة في الاختيار؟",
+    needHelpHint: "تواصل مع فريقنا واحصل على عرض سعر في نفس يوم العمل.",
+    trustedBy: "يثق بنا عملاء في مختلف مناطق المملكة",
+    exploreProducts: "استكشف المنتجات",
   },
   form: {
     name: "الاسم الكامل",

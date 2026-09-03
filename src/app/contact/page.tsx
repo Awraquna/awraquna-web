@@ -6,6 +6,9 @@ import { firstParam, pick } from "@/lib/utils";
 import { getDict } from "@/i18n";
 import ContactForm from "@/components/contact/ContactForm";
 import Icon from "@/components/Icon";
+import PageHeader from "@/components/PageHeader";
+import Container from "@/components/ui/Container";
+import Reveal from "@/components/ui/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -30,16 +33,13 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   ].filter((r) => !!r.value);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{dict.common.contactTitle}</h1>
-        <p className="mt-1 text-gray-500">{dict.common.contactSubtitle}</p>
-      </div>
-
+    <>
+      <PageHeader eyebrow={dict.actions.contactUs} icon="mail" title={dict.common.contactTitle} subtitle={dict.common.contactSubtitle} size="sm" />
+      <Container className="py-10 lg:py-14">
       <div className="grid gap-8 lg:grid-cols-5">
         <aside className="space-y-6 lg:col-span-2">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">{dict.common.contactInfo}</h2>
+          <Reveal dir="start" className="rounded-3xl border border-border bg-surface p-6 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)]">
+            <h2 className="mb-4 text-lg font-semibold text-foreground">{dict.common.contactInfo}</h2>
             {rows.length ? (
               <ul className="space-y-4">
                 {rows.map((r) => (
@@ -48,49 +48,49 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                       <Icon name={r.icon} size={18} />
                     </span>
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-gray-400">{r.label}</p>
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground/70">{r.label}</p>
                       {r.href ? (
-                        <a href={r.href} dir={r.ltr ? "ltr" : undefined} className="text-sm text-gray-800 hover:text-brand-700">
+                        <a href={r.href} dir={r.ltr ? "ltr" : undefined} className="text-sm text-foreground hover:text-brand-700">
                           {r.value}
                         </a>
                       ) : (
-                        <p className="text-sm text-gray-800">{r.value}</p>
+                        <p className="text-sm text-foreground">{r.value}</p>
                       )}
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-gray-400">{dict.common.notAvailable}</p>
+              <p className="text-sm text-muted-foreground/70">{dict.common.notAvailable}</p>
             )}
             {waDigits ? (
               <a
                 href={`https://wa.me/${waDigits}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 <Icon name="whatsapp" size={18} />
                 {dict.actions.whatsapp}
               </a>
             ) : null}
-          </div>
+          </Reveal>
 
           {settings.map_embed_url ? (
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+            <Reveal dir="start" delay={120} className="overflow-hidden rounded-3xl border border-border bg-surface">
               <iframe
                 src={settings.map_embed_url}
                 title="Map"
                 className="h-64 w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
+                  allowFullScreen
               />
-            </div>
+            </Reveal>
           ) : null}
         </aside>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 lg:col-span-3">
+        <Reveal delay={80} className="rounded-3xl border border-border bg-surface p-6 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)] sm:p-8 lg:col-span-3">
           <ContactForm
             initialSubject={subject}
             labels={{
@@ -106,8 +106,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               error: dict.form.error,
             }}
           />
-        </div>
+        </Reveal>
       </div>
-    </div>
+      </Container>
+    </>
   );
 }

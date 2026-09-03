@@ -9,6 +9,8 @@ import ProductCard from "@/components/ProductCard";
 import Pagination from "@/components/Pagination";
 import EmptyState from "@/components/EmptyState";
 import Icon from "@/components/Icon";
+import PageHeader from "@/components/PageHeader";
+import Container from "@/components/ui/Container";
 
 export const dynamic = "force-dynamic";
 
@@ -54,12 +56,40 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     dict.common.productsTitle;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{heading}</h1>
-        <p className="mt-1 text-gray-500">{dict.common.productsSubtitle}</p>
-      </div>
+    <>
+      <PageHeader
+        eyebrow={dict.nav.products}
+        icon="box"
+        title={heading}
+        subtitle={dict.common.productsSubtitle}
+        size="sm"
+      >
+        {/* The search lives in the banner so the filter state and the page title
+            read as one control surface. */}
+        <form action="/products" method="get" className="mt-7 flex max-w-2xl gap-2" role="search">
+          {filters.category ? <input type="hidden" name="category" value={filters.category} /> : null}
+          {filters.subCategory ? <input type="hidden" name="subCategory" value={filters.subCategory} /> : null}
+          {filters.area ? <input type="hidden" name="area" value={filters.area} /> : null}
+          <div className="relative flex-1">
+            <Icon name="search" size={18} className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
+            <input
+              type="search"
+              name="search"
+              defaultValue={filters.search}
+              placeholder={dict.common.searchPlaceholder}
+              className="h-12 w-full rounded-full border border-border bg-surface pe-4 ps-11 text-sm text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/25"
+            />
+          </div>
+          <button
+            type="submit"
+            className="h-12 shrink-0 rounded-full bg-brand-600 px-6 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_var(--brand-600)] transition hover:bg-brand-700 dark:text-[#0a1017]"
+          >
+            {dict.actions.search}
+          </button>
+        </form>
+      </PageHeader>
 
+      <Container className="py-10 lg:py-14">
       <div className="flex flex-col gap-8 lg:flex-row">
         <ProductsSidebar
           categories={categories ?? []}
@@ -76,27 +106,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         />
 
         <div className="min-w-0 flex-1">
-          <form action="/products" method="get" className="mb-6 flex gap-2" role="search">
-            {filters.category ? <input type="hidden" name="category" value={filters.category} /> : null}
-            {filters.subCategory ? <input type="hidden" name="subCategory" value={filters.subCategory} /> : null}
-            {filters.area ? <input type="hidden" name="area" value={filters.area} /> : null}
-            <div className="relative flex-1">
-              <Icon name="search" size={18} className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                name="search"
-                defaultValue={filters.search}
-                placeholder={dict.common.searchPlaceholder}
-                className="w-full rounded-xl border border-gray-300 bg-white py-2.5 pe-3 ps-10 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
-              />
-            </div>
-            <button type="submit" className="rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
-              {dict.actions.search}
-            </button>
-          </form>
-
           {products ? (
-            <p className="mb-4 text-sm text-gray-500">
+            <p className="mb-4 text-sm text-muted-foreground">
               {total} {dict.common.results}
               {filters.search ? (
                 <>
@@ -122,6 +133,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           <Pagination basePath="/products" params={filters} page={page} pageSize={products?.pageSize || PAGE_SIZE} total={total} dict={dict} />
         </div>
       </div>
-    </div>
+      </Container>
+    </>
   );
 }

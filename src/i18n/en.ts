@@ -30,6 +30,7 @@ const en = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     switchLanguage: "العربية",
+    toggleTheme: "Toggle theme",
   },
   common: {
     quoteOnRequest: "Request a quote",
@@ -75,6 +76,10 @@ const en = {
     pageNotFound: "Page not found",
     pageNotFoundHint: "The page you are looking for does not exist or has been moved.",
     products: "products",
+    needHelp: "Need help choosing?",
+    needHelpHint: "Talk to our team and get a quote the same business day.",
+    trustedBy: "Trusted by teams across Saudi Arabia",
+    exploreProducts: "Explore products",
   },
   form: {
     name: "Full name",
