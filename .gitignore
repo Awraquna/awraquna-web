@@ -49,3 +49,8 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+# cloudflare / opennext
+/.open-next/
+/.wrangler/
+.dev.vars

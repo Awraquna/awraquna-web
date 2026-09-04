@@ -41,6 +41,12 @@ export default async function Header({ locale, settings }: Props) {
         theme: dict.actions.toggleTheme,
         search: dict.actions.search,
         searchPlaceholder: dict.common.searchPlaceholder,
+        suggest: {
+          searching: dict.common.searching,
+          noResults: dict.common.noResults,
+          seeAllResults: dict.actions.seeAllResults,
+          results: dict.common.results,
+        },
         contactUs: dict.actions.contactUs,
         mega: {
           categories: dict.common.categories,

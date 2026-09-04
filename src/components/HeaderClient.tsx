@@ -11,6 +11,7 @@ import LanguageToggle from "./LanguageToggle";
 import SiteLogo from "./SiteLogo";
 import ThemeToggle from "./ui/ThemeToggle";
 import ProductsMegaMenu, { type MegaLabels } from "./header/ProductsMegaMenu";
+import SearchSuggestions, { type SuggestLabels } from "./search/SearchSuggestions";
 
 export type NavLink = { href: string; label: string; icon: string; panel?: "products" };
 
@@ -30,6 +31,7 @@ type Props = {
     theme: string;
     search: string;
     searchPlaceholder: string;
+    suggest: SuggestLabels;
     contactUs: string;
     mega: MegaLabels;
   };
@@ -75,6 +77,9 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const searchInput = useRef<HTMLInputElement | null>(null);
+  const searchBox = useRef<HTMLDivElement | null>(null);
+  // The drawer has its own box, so a term typed there never leaks into the pill.
+  const [drawerQuery, setDrawerQuery] = useState("");
 
   // Sliding active-item indicator. Deliberately NOT React state: while the bar
   // collapses, the active item moves every frame, and re-rendering the whole nav
@@ -94,6 +99,9 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
     setSeenPath(pathname);
     setOpen(false);
     setPanel(null);
+    setSearchOpen(false);
+    setQuery("");
+    setDrawerQuery("");
   }
 
   // Lock body scroll while the drawer is open, close on Escape.
@@ -118,6 +126,16 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // Click anywhere outside the search box (input, button, suggestions) closes it.
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (searchBox.current && !searchBox.current.contains(e.target as Node)) setSearchOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [searchOpen]);
 
   // rAF-throttled, and it writes state only when the boolean actually flips, so
   // scrolling the length of the page costs exactly two renders. The collapse and
@@ -220,21 +238,32 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
     closeTimer.current = window.setTimeout(() => setPanel(null), 220);
   };
 
+  const goSearch = (q: string) => {
+    const term = q.trim();
+    if (!term) return false;
+    router.push(`/products?search=${encodeURIComponent(term)}`);
+    return true;
+  };
+
+  /** Desktop pill: first click opens the box, Enter / second click searches. */
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const q = query.trim();
     if (!searchOpen) {
       setSearchOpen(true);
       window.setTimeout(() => searchInput.current?.focus(), 60);
       return;
     }
-    if (!q) {
-      setSearchOpen(false);
-      return;
-    }
-    router.push(`/products?search=${encodeURIComponent(q)}`);
     setSearchOpen(false);
-    setQuery("");
+    if (goSearch(query)) setQuery("");
+  };
+
+  /** Mobile drawer: plain submit, then close the drawer. */
+  const submitDrawerSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (goSearch(drawerQuery)) {
+      setDrawerQuery("");
+      close();
+    }
   };
 
   const tel = phone ? `tel:${phone.replace(/\s+/g, "")}` : null;
@@ -277,18 +306,21 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
               </button>
             </div>
 
-            <form onSubmit={submitSearch} className="border-b border-border p-4" role="search">
+            <form onSubmit={submitDrawerSearch} className="border-b border-border p-4" role="search">
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-2 px-3">
                 <Icon name="search" size={16} className="shrink-0 text-muted-foreground" />
                 <input
                   type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  value={drawerQuery}
+                  onChange={(e) => setDrawerQuery(e.target.value)}
                   placeholder={labels.searchPlaceholder}
                   aria-label={labels.search}
+                  enterKeyHint="search"
+                  autoComplete="off"
                   className="h-11 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </div>
+              <SearchSuggestions query={drawerQuery} locale={locale} labels={labels.suggest} onPick={close} className="mt-2" />
             </form>
 
             <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Mobile">
@@ -433,26 +465,40 @@ export default function HeaderClient({ locale, siteName, logoUrl, phone, links, 
 
             <span className="mx-1.5 h-7 w-px shrink-0 bg-border" />
 
-            <form onSubmit={submitSearch} role="search" className="flex items-center">
-              <input
-                ref={searchInput}
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onBlur={() => !query && setSearchOpen(false)}
-                placeholder={labels.searchPlaceholder}
-                aria-label={labels.search}
-                aria-hidden={!searchOpen}
-                tabIndex={searchOpen ? 0 : -1}
-                className={cx(
-                  "h-10 rounded-full border border-border bg-surface-2 text-sm text-foreground outline-none transition-all duration-300 placeholder:text-muted-foreground focus:border-brand-400",
-                  searchOpen ? "me-1.5 w-52 px-4 opacity-100" : "pointer-events-none w-0 border-transparent px-0 opacity-0",
-                )}
-              />
-              <button type="submit" className={iconBtn} aria-label={labels.search} title={labels.search}>
-                <Icon name="search" size={18} />
-              </button>
-            </form>
+            <div ref={searchBox} className="relative">
+              <form onSubmit={submitSearch} role="search" className="flex items-center">
+                <input
+                  ref={searchInput}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={labels.searchPlaceholder}
+                  aria-label={labels.search}
+                  aria-hidden={!searchOpen}
+                  autoComplete="off"
+                  tabIndex={searchOpen ? 0 : -1}
+                  className={cx(
+                    "h-10 rounded-full border border-border bg-surface-2 text-sm text-foreground outline-none transition-all duration-300 placeholder:text-muted-foreground focus:border-brand-400",
+                    searchOpen ? "me-1.5 w-64 px-4 opacity-100" : "pointer-events-none w-0 border-transparent px-0 opacity-0",
+                  )}
+                />
+                <button type="submit" className={iconBtn} aria-label={labels.search} title={labels.search}>
+                  <Icon name="search" size={18} />
+                </button>
+              </form>
+              {searchOpen ? (
+                <SearchSuggestions
+                  query={query}
+                  locale={locale}
+                  labels={labels.suggest}
+                  onPick={() => {
+                    setSearchOpen(false);
+                    setQuery("");
+                  }}
+                  className="absolute end-0 top-full z-50 mt-3 w-[26rem]"
+                />
+              ) : null}
+            </div>
 
             <span className="w-1.5" />
             <LanguageToggle locale={locale} label={labels.switchLanguage} />

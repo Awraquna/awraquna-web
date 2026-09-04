@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "awraquna-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-20",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Public API base URL the site fetches from. Override per deploy with:
+  //   npx wrangler deploy --var NEXT_PUBLIC_API_URL:https://api.example.com
+  "vars": {
+    "NEXT_PUBLIC_API_URL": "https://awraquna.runasp.net",
+    "REVALIDATE_SECONDS": "60"
+  }
+}
