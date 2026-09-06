@@ -207,25 +207,46 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
 
         {/* ---- Artwork ---- */}
         <div className="relative">
-          <div className="animate-float relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(16_24_40_/_0.45)] lg:aspect-[5/4]">
+          {/* The frame is shaped like the 1920x800 banners the admin asks for, and
+              the artwork is CONTAINED rather than cropped: what an editor uploads
+              is what visitors see, whatever ratio they upload. A blurred, scaled
+              copy of the same file (one request — same src) fills whatever space
+              is left over, so the card still reads as full-bleed instead of
+              letterboxed. */}
+          <div className="animate-float relative aspect-[16/10] w-full overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(16_24_40_/_0.45)] lg:aspect-[16/9]">
             {hasArt ? (
               slides.map((s, i) =>
                 s.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <div
                     key={s.id}
-                    src={s.image}
-                    alt=""
-                    aria-hidden="true"
-                    loading={i === 0 ? "eager" : "lazy"}
-                    fetchPriority={i === 0 ? "high" : "low"}
-                    decoding="async"
-                    draggable={false}
                     className={cx(
-                      "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
+                      "absolute inset-0 transition-opacity duration-700 ease-out",
                       i === index ? "opacity-100" : "opacity-0",
                     )}
-                  />
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.image}
+                      alt=""
+                      aria-hidden="true"
+                      loading={i === 0 ? "eager" : "lazy"}
+                      fetchPriority={i === 0 ? "high" : "low"}
+                      decoding="async"
+                      draggable={false}
+                      className="absolute inset-0 h-full w-full scale-110 select-none object-cover opacity-60 blur-2xl saturate-150"
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.image}
+                      alt=""
+                      aria-hidden="true"
+                      loading={i === 0 ? "eager" : "lazy"}
+                      fetchPriority={i === 0 ? "high" : "low"}
+                      decoding="async"
+                      draggable={false}
+                      className="absolute inset-0 h-full w-full select-none object-contain"
+                    />
+                  </div>
                 ) : null,
               )
             ) : (
