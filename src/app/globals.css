@@ -229,22 +229,58 @@ html[dir="rtl"] body {
      texture rather than a repaint of ~44 tiles. */
   will-change: transform;
   transform: translate3d(0, 0, 0);
-  /* One filter on the whole strip. Per-image `grayscale` meant 44 separately
-     filtered layers being recomposited every frame — measurably the largest
-     jank source on the page, and it cost frames even with the strip off screen. */
-  filter: grayscale(1);
-  transition: filter 0.3s ease;
 }
-.marquee:hover .marquee-track {
-  filter: grayscale(0);
-}
-/* Travel follows the reading direction: leftwards in LTR, rightwards in RTL. */
+/* Travel follows the reading direction: leftwards in LTR, rightwards in RTL.
+   RTL needs its OWN keyframes, not `animation-direction: reverse`. In RTL the
+   track hangs off the container's right edge, so its content lives at negative
+   x; translating it a further -50% (which is all `reverse` does — it replays the
+   same -50% track backwards) drags every logo past the left edge and the strip
+   renders blank. Mirroring the keyframes to +50% is what actually mirrors it. */
 [dir="rtl"] .marquee-track {
-  animation-direction: reverse;
+  animation-name: marquee-rtl;
+}
+@keyframes marquee-rtl {
+  from { transform: translateX(0); }
+  to   { transform: translateX(50%); }
 }
 .marquee:hover .marquee-track,
 .marquee:focus-within .marquee-track {
   animation-play-state: paused;
+}
+
+/* ---------- Card rails (home page rows on phones) ----------
+   A row of cards that is a grid from `sm` up becomes ONE horizontal, snapping
+   rail on phones: you swipe sideways through the products instead of scrolling
+   past a tall stack of them. Applied by adding `card-rail` next to the existing
+   grid classes — above 640px this block simply does not apply and the grid rules
+   take over untouched.
+
+   The negative margin plus matching padding lets the rail bleed to both screen
+   edges while its first card still lines up with the page gutter. */
+@media (max-width: 639.98px) {
+  .card-rail {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-bottom: 0.25rem;
+    /* The rail is the gesture, not the scrollbar. */
+    scrollbar-width: none;
+  }
+  .card-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .card-rail > * {
+    /* A sliver of the next card is always showing, which is what tells a visitor
+       the row scrolls at all. */
+    flex: 0 0 80%;
+    max-width: 20rem;
+    scroll-snap-align: start;
+  }
 }
 
 @keyframes shimmer {

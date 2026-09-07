@@ -90,7 +90,7 @@ export default async function HomePage() {
               title={t(s, "title") || "Browse Product Categories"}
               subtitle={t(s, "subtitle")}
             />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {categories.map((c, i) => (
                 <Reveal key={c.id} delay={(i % 4) * 80}>
                   <Link
@@ -148,7 +148,7 @@ export default async function HomePage() {
               title={t(s, "title") || "Shop by Business Area"}
               subtitle={t(s, "subtitle")}
             />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {areas.map((a, i) => (
                 <Reveal key={a.id} delay={(i % 4) * 80}>
                   <Link
@@ -305,7 +305,7 @@ export default async function HomePage() {
         <section className="border-t border-border bg-surface py-20">
           <Container>
             <SectionHeading eyebrow={dict.nav.news} title={t(s, "title") || dict.common.latestNews} subtitle={t(s, "subtitle")} />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {latestNews.map((n, i) => (
                 <Reveal key={n.id} delay={(i % 4) * 80}>
                   <NewsCard post={n} locale={locale} showImage={false} />

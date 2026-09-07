@@ -50,7 +50,7 @@ export default function BestSellersTabs({ areas, products, locale, labels }: Pro
         ))}
       </div>
       {visible.length ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {visible.slice(0, 8).map((p) => (
             <ProductCard key={p.id} product={p} locale={locale} />
           ))}

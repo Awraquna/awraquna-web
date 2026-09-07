@@ -17,6 +17,11 @@ type Props = {
 
 const AUTOPLAY_MS = 6000;
 
+/** Banner slots take a photo or a short video; the file extension says which. */
+export function isVideo(url: string): boolean {
+  return /\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(url);
+}
+
 /**
  * Home hero — a split layout: the campaign copy on one side, the banner artwork
  * floating in a rounded card on the other, over a soft brand-lit grid.
@@ -44,6 +49,15 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
+
+  // Natural width/height of each slide's media, keyed by slide id. The frame is
+  // shaped from this so nothing is ever cropped or letterboxed. Written once per
+  // file, from its own load event.
+  const [ratios, setRatios] = useState<Record<number, number>>({});
+  const setRatio = useCallback(
+    (id: number, ratio: number) => setRatios((r) => (r[id] === ratio ? r : { ...r, [id]: ratio })),
+    [],
+  );
 
   const go = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
   const next = useCallback(() => go(index + 1), [go, index]);
@@ -207,25 +221,43 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
 
         {/* ---- Artwork ---- */}
         <div className="relative">
-          {/* The frame is shaped like the 1920x800 banners the admin asks for, and
-              the artwork is CONTAINED rather than cropped: what an editor uploads
-              is what visitors see, whatever ratio they upload. A blurred, scaled
-              copy of the same file (one request — same src) fills whatever space
-              is left over, so the card still reads as full-bleed instead of
-              letterboxed. */}
-          <div className="animate-float relative aspect-[16/10] w-full overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(16_24_40_/_0.45)] lg:aspect-[16/9]">
+          {/* The frame has NO fixed aspect: it takes the shape of the media the
+              editor uploaded (measured from the file itself once it loads), so the
+              artwork fills the card edge to edge with nothing cropped away and
+              nothing letterboxed. 16/9 is only the placeholder used for the first
+              paint, before the real ratio is known. */}
+          <div
+            className="animate-float relative w-full overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(16_24_40_/_0.45)] transition-[aspect-ratio] duration-500 ease-out"
+            style={{ aspectRatio: ratios[slides[index].id] ?? 16 / 9 }}
+          >
             {hasArt ? (
               slides.map((s, i) =>
                 s.image ? (
-                  <div
-                    key={s.id}
-                    className={cx(
-                      "absolute inset-0 transition-opacity duration-700 ease-out",
-                      i === index ? "opacity-100" : "opacity-0",
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  isVideo(s.image) ? (
+                    <video
+                      key={s.id}
+                      src={s.image}
+                      // Muted + inline is what lets a banner autoplay on iOS and
+                      // Chrome at all; without both, the poster frame just sits there.
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload={i === 0 ? "auto" : "metadata"}
+                      aria-hidden="true"
+                      onLoadedMetadata={(e) => {
+                        const v = e.currentTarget;
+                        if (v.videoWidth && v.videoHeight) setRatio(s.id, v.videoWidth / v.videoHeight);
+                      }}
+                      className={cx(
+                        "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
+                        i === index ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
+                      key={s.id}
                       src={s.image}
                       alt=""
                       aria-hidden="true"
@@ -233,20 +265,16 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
                       fetchPriority={i === 0 ? "high" : "low"}
                       decoding="async"
                       draggable={false}
-                      className="absolute inset-0 h-full w-full scale-110 select-none object-cover opacity-60 blur-2xl saturate-150"
+                      onLoad={(e) => {
+                        const img = e.currentTarget;
+                        if (img.naturalWidth && img.naturalHeight) setRatio(s.id, img.naturalWidth / img.naturalHeight);
+                      }}
+                      className={cx(
+                        "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
+                        i === index ? "opacity-100" : "opacity-0",
+                      )}
                     />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={s.image}
-                      alt=""
-                      aria-hidden="true"
-                      loading={i === 0 ? "eager" : "lazy"}
-                      fetchPriority={i === 0 ? "high" : "low"}
-                      decoding="async"
-                      draggable={false}
-                      className="absolute inset-0 h-full w-full select-none object-contain"
-                    />
-                  </div>
+                  )
                 ) : null,
               )
             ) : (
