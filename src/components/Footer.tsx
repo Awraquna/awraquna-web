@@ -69,10 +69,13 @@ export default async function Footer({ locale, settings }: Props) {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent" />
       <div className="pointer-events-none absolute -top-32 start-1/4 h-72 w-72 rounded-full bg-[var(--brand-soft)] blur-3xl" />
 
-      <Container className="relative py-14 lg:py-16">
-        <div className="grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-12">
+      <Container className="relative py-10 sm:py-14 lg:py-16">
+        {/* Two columns from the smallest screen up: stacked, the link lists made
+            the footer taller than the page above it. The brand block and the CTA
+            span both, the two link columns sit side by side. */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 lg:grid-cols-12">
           {/* Brand + contact */}
-          <Reveal className="lg:col-span-5">
+          <Reveal className="col-span-2 lg:col-span-5">
             <Link href="/" aria-label={siteName} className="inline-flex">
               <SiteLogo src={logoUrl} siteName={siteName} className="h-10" />
             </Link>
@@ -110,7 +113,7 @@ export default async function Footer({ locale, settings }: Props) {
 
           {/* Link columns */}
           {columns.map((col, i) => (
-            <Reveal key={col.title} delay={80 + i * 60} className="lg:col-span-2">
+            <Reveal key={col.title} delay={80 + i * 60} className="col-span-1 lg:col-span-2">
               <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground">{col.title}</h3>
               <ul className="space-y-2.5">
                 {col.links.map((l) => (
@@ -129,7 +132,7 @@ export default async function Footer({ locale, settings }: Props) {
           ))}
 
           {/* Closing CTA */}
-          <Reveal delay={200} className="lg:col-span-3">
+          <Reveal delay={200} className="col-span-2 lg:col-span-3">
             <div className="brand-panel rounded-2xl p-5">
               <h3 className="text-base font-bold">{dict.common.needHelp}</h3>
               <p className="mt-1.5 text-sm text-white/80">{dict.common.needHelpHint}</p>
@@ -144,7 +147,7 @@ export default async function Footer({ locale, settings }: Props) {
           </Reveal>
         </div>
 
-        <div className="mt-12 flex flex-col-reverse items-start justify-between gap-5 border-t border-border pt-6 sm:flex-row sm:items-center">
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-x-5 gap-y-4 border-t border-border pt-6 sm:mt-12">
           <p className="text-xs text-muted-foreground">
             {copyright} {year}
             {pick(s, "tagline", locale) ? <span className="mx-2 opacity-40">·</span> : null}
@@ -152,7 +155,7 @@ export default async function Footer({ locale, settings }: Props) {
           </p>
           {socials.length ? (
             <div className="flex items-center gap-2.5">
-              <span className="me-1 text-xs uppercase tracking-wider text-muted-foreground">{dict.common.followUs}</span>
+              <span className="me-1 hidden text-xs uppercase tracking-wider text-muted-foreground sm:inline">{dict.common.followUs}</span>
               {socials.map((x) => (
                 <a
                   key={x.key}
@@ -161,7 +164,7 @@ export default async function Footer({ locale, settings }: Props) {
                   rel="noopener noreferrer"
                   aria-label={x.label}
                   title={x.label}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-brand-500/60 hover:text-brand-600"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-brand-500/60 hover:text-brand-600 sm:h-9 sm:w-9"
                 >
                   <Icon name={x.key} size={16} />
                 </a>
