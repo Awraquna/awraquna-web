@@ -70,7 +70,7 @@ export default async function ProductPage({ params }: Params) {
   const waHref = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(`${dict.actions.requestQuote}: ${name}${p.sku ? ` (${p.sku})` : ""}`)}` : null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <nav className="mb-6 flex flex-wrap items-center gap-1 text-sm text-muted-foreground" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-brand-700">
           {dict.nav.home}
@@ -185,9 +185,9 @@ export default async function ProductPage({ params }: Params) {
       ) : null}
 
       {p.related?.length ? (
-        <section className="mt-16">
+        <section className="mt-10 sm:mt-16">
           <h2 className="mb-6 text-2xl font-bold text-foreground">{dict.common.related}</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {p.related.map((r) => (
               <ProductCard key={r.id} product={r} locale={locale} />
             ))}

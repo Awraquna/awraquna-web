@@ -377,6 +377,28 @@ html[data-lang-switch="ar"]::view-transition-new(root) { animation-name: vt-in-r
 /* switching to English: the mirror image */
 html[data-lang-switch="en"]::view-transition-old(root) { animation-name: vt-out-right; }
 html[data-lang-switch="en"]::view-transition-new(root) { animation-name: vt-in-left; }
+
+/* On a phone there is no gutter for that 18px slide to happen in — the layout
+   runs edge to edge, so the sliding snapshot is clipped against the screen while
+   the header (which has its own transition name) stays put. For the length of
+   the switch the page looks broken and cut off down one side. Below `sm` the
+   switch is a straight crossfade instead. */
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+@media (max-width: 639.98px) {
+  html[data-lang-switch="ar"]::view-transition-old(root),
+  html[data-lang-switch="en"]::view-transition-old(root) {
+    animation-name: vt-fade-out;
+  }
+  html[data-lang-switch="ar"]::view-transition-new(root),
+  html[data-lang-switch="en"]::view-transition-new(root) {
+    animation-name: vt-fade-in;
+  }
+}
 /* the sticky header just crossfades so the logo does not jump */
 header {
   view-transition-name: site-header;

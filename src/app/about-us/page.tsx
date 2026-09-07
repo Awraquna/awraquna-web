@@ -67,7 +67,7 @@ function Section({ section: s, locale }: { section: ContentSection; locale: Loca
       return (
         <section className={`${container} py-20`}>
           <Heading title={title} subtitle={subtitle} />
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="card-rail grid gap-5 md:grid-cols-3">
             {items.map((it) => (
               <div key={it.id} className="rounded-3xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300">
                 <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
@@ -105,7 +105,7 @@ function Section({ section: s, locale }: { section: ContentSection; locale: Loca
       return (
         <section className={`${container} py-20`}>
           <Heading title={title} subtitle={subtitle} />
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="card-rail grid gap-5 md:grid-cols-3">
             {items.map((it, i) => (
               <div key={it.id} className="relative rounded-3xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300">
                 <div className="mb-3 flex items-center gap-3">
@@ -143,7 +143,7 @@ function Section({ section: s, locale }: { section: ContentSection; locale: Loca
       return (
         <section className={`${container} py-20`}>
           <Heading title={title} subtitle={subtitle} />
-          <ol className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <ol className="card-rail grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {items.map((it, i) => (
               <li key={it.id} className="rounded-3xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300">
                 <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
@@ -192,7 +192,7 @@ function Section({ section: s, locale }: { section: ContentSection; locale: Loca
           {s.imageUrl ? <AppImage src={s.imageUrl} alt={title} className="mb-6 aspect-[21/9] w-full rounded-2xl" /> : null}
           {body ? <div className="prose-cms mx-auto max-w-3xl text-muted-foreground" dangerouslySetInnerHTML={{ __html: body }} /> : null}
           {items.length ? (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="card-rail mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((it) => (
                 <div key={it.id} className="rounded-3xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300">
                   {it.imageUrl ? (
