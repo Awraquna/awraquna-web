@@ -335,7 +335,13 @@ export default async function HomePage() {
         banners={home?.banners ?? []}
         locale={locale}
         fallback={heroFallback}
-        labels={{ badge: dict.common.trustedBy, secondaryCta: dict.actions.contactUs, secondaryHref: "/contact" }}
+        labels={{
+          badge: dict.common.trustedBy,
+          secondaryCta: dict.actions.contactUs,
+          secondaryHref: "/contact",
+          soundOn: dict.actions.soundOn,
+          soundOff: dict.actions.soundOff,
+        }}
       />
 
       {!home ? (

@@ -50,6 +50,11 @@ const PATHS: Record<string, string> = {
   whatsapp:
     "M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21 M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1",
   menu: "M4 6h16 M4 12h16 M4 18h16",
+  // Hero banner video sound toggle.
+  volume:
+    "M11 5 6 9H2v6h4l5 4V5Z M15.54 8.46a5 5 0 0 1 0 7.07 M19.07 4.93a10 10 0 0 1 0 14.14",
+  "volume-off":
+    "M11 5 6 9H2v6h4l5 4V5Z M22 9l-6 6 M16 9l6 6",
   close: "M18 6 6 18 M6 6l12 12",
   search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z M21 21l-4.35-4.35",
   "chevron-down": "m6 9 6 6 6-6",

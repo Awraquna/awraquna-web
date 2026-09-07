@@ -277,7 +277,7 @@ export default function QuoteWizard({ categories, locale, preset, labels }: Prop
                   onClick={() => toggleCat(c.slug)}
                   aria-pressed={on}
                   className={cx(
-                    "flex items-center gap-3 rounded-2xl border p-3 text-start transition",
+                    "flex min-w-0 items-center gap-3 rounded-2xl border p-3 text-start transition",
                     on
                       ? "border-brand-500 bg-brand-50 ring-2 ring-brand-500/25"
                       : "border-border bg-surface hover:border-brand-300 hover:bg-surface-2",
@@ -331,7 +331,7 @@ export default function QuoteWizard({ categories, locale, preset, labels }: Prop
           {pickedList.length ? (
             <ul className="mt-4 flex flex-wrap gap-1.5">
               {pickedList.map((p) => (
-                <li key={p.slug}>
+                <li key={p.slug} className="min-w-0 max-w-full">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-300 bg-brand-50 py-1 pe-1 ps-3 text-xs font-medium text-brand-700">
                     {pick(p, "name", locale)}
                     <button
@@ -380,18 +380,18 @@ export default function QuoteWizard({ categories, locale, preset, labels }: Prop
                     ))}
                   </ul>
                 ) : g.items.length ? (
-                  <ul className="grid gap-2 sm:grid-cols-2">
+                  <ul className="grid max-h-[19rem] gap-2 overflow-y-auto overscroll-contain rounded-xl border border-border/70 bg-surface-2/40 p-2 sm:max-h-[22rem] sm:grid-cols-2">
                     {g.items.map((p) => {
                       const on = !!picked[p.slug];
                       const price = formatPrice(p.price, locale);
                       return (
-                        <li key={p.id}>
+                        <li key={p.id} className="min-w-0">
                           <button
                             type="button"
                             onClick={() => togglePick(p)}
                             aria-pressed={on}
                             className={cx(
-                              "flex w-full items-center gap-3 rounded-xl border p-2.5 text-start transition",
+                              "flex w-full min-w-0 items-center gap-3 rounded-xl border p-2.5 text-start transition",
                               on
                                 ? "border-brand-500 bg-brand-50 ring-2 ring-brand-500/25"
                                 : "border-border bg-surface hover:border-brand-300 hover:bg-surface-2",
@@ -463,7 +463,7 @@ export default function QuoteWizard({ categories, locale, preset, labels }: Prop
             {pickedList.length ? (
               <ul className="space-y-2">
                 {pickedList.map((p) => (
-                  <li key={p.slug} className="flex items-center gap-3 rounded-xl border border-border bg-surface p-2">
+                  <li key={p.slug} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border bg-surface p-2">
                     <AppImage src={p.imageUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg" icon="box" iconSize={16} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-foreground">{pick(p, "name", locale)}</span>

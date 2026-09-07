@@ -12,7 +12,7 @@ type Props = {
   banners: Banner[];
   locale: Locale;
   fallback: { title: string; subtitle: string; ctaText: string; ctaUrl: string };
-  labels: { secondaryCta: string; secondaryHref: string; badge: string };
+  labels: { secondaryCta: string; secondaryHref: string; badge: string; soundOn: string; soundOff: string };
 };
 
 const AUTOPLAY_MS = 6000;
@@ -50,6 +50,12 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
+  // Sound for video banners. It starts off and cannot start on: every browser
+  // refuses to autoplay audible video, so a muted autoplay plus this switch is
+  // the only way a banner can ever be heard. The choice applies to whichever
+  // slide is on screen — the ones behind it stay silent and paused.
+  const [soundOn, setSoundOn] = useState(false);
+
   // Natural width/height of each slide's media, keyed by slide id. The frame is
   // shaped from this so nothing is ever cropped or letterboxed. Written once per
   // file, from its own load event.
@@ -59,13 +65,15 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
     [],
   );
 
+  const activeIsVideo = !!slides[index].image && isVideo(slides[index].image!);
+
   const go = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
   const next = useCallback(() => go(index + 1), [go, index]);
   const prev = useCallback(() => go(index - 1), [go, index]);
 
   // Autoplay: one timer, reset on manual change, paused when hidden / hovered / reduced motion.
   useEffect(() => {
-    if (count <= 1 || paused) return;
+    if (count <= 1 || paused || soundOn) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let timer: number | undefined;
     const start = () => {
@@ -81,7 +89,7 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
       stop();
       document.removeEventListener("visibilitychange", start);
     };
-  }, [count, paused, index]);
+  }, [count, paused, index, soundOn]);
 
   const onKey = (e: React.KeyboardEvent) => {
     if (count <= 1) return;
@@ -234,25 +242,13 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
               slides.map((s, i) =>
                 s.image ? (
                   isVideo(s.image) ? (
-                    <video
+                    <HeroVideo
                       key={s.id}
                       src={s.image}
-                      // Muted + inline is what lets a banner autoplay on iOS and
-                      // Chrome at all; without both, the poster frame just sits there.
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload={i === 0 ? "auto" : "metadata"}
-                      aria-hidden="true"
-                      onLoadedMetadata={(e) => {
-                        const v = e.currentTarget;
-                        if (v.videoWidth && v.videoHeight) setRatio(s.id, v.videoWidth / v.videoHeight);
-                      }}
-                      className={cx(
-                        "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
-                        i === index ? "opacity-100" : "opacity-0",
-                      )}
+                      active={i === index}
+                      soundOn={soundOn}
+                      eager={i === 0}
+                      onRatio={(r) => setRatio(s.id, r)}
                     />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -287,6 +283,22 @@ export default function HeroBanner({ banners, locale, fallback, labels }: Props)
             ) : null}
             {/* A whisper of brand over the photo so it belongs to the palette. */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-900/25 via-transparent to-transparent" />
+
+            {/* Sound, for video banners only. It has to be a deliberate tap: a
+                banner that starts talking on its own is blocked by the browser
+                anyway, and would be the wrong thing even if it were not. */}
+            {activeIsVideo ? (
+              <button
+                type="button"
+                onClick={() => setSoundOn((v) => !v)}
+                aria-pressed={soundOn}
+                aria-label={soundOn ? labels.soundOff : labels.soundOn}
+                title={soundOn ? labels.soundOff : labels.soundOn}
+                className="absolute bottom-3 end-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-slate-950/45 text-white backdrop-blur-md transition hover:bg-slate-950/70"
+              >
+                <Icon name={soundOn ? "volume" : "volume-off"} size={18} />
+              </button>
+            ) : null}
           </div>
 
           {/* Floating chip naming the campaign currently on show. Only earns its
@@ -324,5 +336,64 @@ function Accented({ text }: { text: string }) {
     <>
       {head} <span className="text-gradient">{tail}</span>
     </>
+  );
+}
+
+/**
+ * One banner video. It owns its element so that `muted` and playback are driven
+ * from an effect: React sets `muted` only as an initial property, so re-rendering
+ * with a new prop would never actually unmute a playing video. Slides that are
+ * not on screen are paused and silent, so a carousel never plays two at once.
+ */
+function HeroVideo({
+  src,
+  active,
+  soundOn,
+  eager,
+  onRatio,
+}: {
+  src: string;
+  active: boolean;
+  soundOn: boolean;
+  eager: boolean;
+  onRatio: (ratio: number) => void;
+}) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = !(active && soundOn);
+    if (active) {
+      // A rejection is the browser refusing autoplay; the frame stays as it is,
+      // which is the correct fallback.
+      void el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [active, soundOn]);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      // Muted + inline is what lets a banner autoplay on iOS and Chrome at all;
+      // without both, the first frame just sits there. The sound button on the
+      // frame unmutes whichever slide is showing.
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload={eager ? "auto" : "metadata"}
+      aria-hidden="true"
+      onLoadedMetadata={(e) => {
+        const v = e.currentTarget;
+        if (v.videoWidth && v.videoHeight) onRatio(v.videoWidth / v.videoHeight);
+      }}
+      className={cx(
+        "absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700 ease-out",
+        active ? "opacity-100" : "opacity-0",
+      )}
+    />
   );
 }

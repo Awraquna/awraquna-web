@@ -269,7 +269,13 @@ html[dir="rtl"] body {
     display: flex;
     gap: 1rem;
     overflow-x: auto;
-    overscroll-behavior-x: contain;
+    /* The rail must never take a vertical drag off the page. Without pan-y the
+       browser hands the whole gesture to the scroller the moment it starts
+       inside a card, so the card appears to be draggable in every direction and
+       the page underneath refuses to move. `contain` stops a horizontal fling
+       from bubbling out into browser back/forward navigation. */
+    touch-action: pan-x pan-y;
+    overscroll-behavior: contain;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 1rem;
     margin-inline: -1rem;
@@ -283,10 +289,15 @@ html[dir="rtl"] body {
   }
   .card-rail > * {
     /* A sliver of the next card is always showing, which is what tells a visitor
-       the row scrolls at all. */
+       the row scrolls at all. snap-stop "always" means a fling advances one card
+       rather than five, so the row always comes to rest ON a card instead of
+       halfway between two — which is what made it feel like the cards could be
+       dragged loose. */
     flex: 0 0 80%;
     max-width: 20rem;
+    min-width: 0;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 }
 

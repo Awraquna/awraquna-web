@@ -70,7 +70,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       <PageHeader eyebrow={dict.actions.contactUs} icon="mail" title={dict.common.contactTitle} subtitle={dict.common.contactSubtitle} size="sm" />
       <Container className="py-10 lg:py-14">
       <div className="grid gap-8 lg:grid-cols-5">
-        <aside className="space-y-6 lg:col-span-2">
+        <aside className="min-w-0 space-y-6 lg:col-span-2">
           <Reveal dir="start" className="rounded-3xl border border-border bg-surface p-6 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)]">
             <h2 className="mb-4 text-lg font-semibold text-foreground">{dict.common.contactInfo}</h2>
             {rows.length ? (
@@ -123,7 +123,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           ) : null}
         </aside>
 
-        <Reveal delay={80} className="rounded-3xl border border-border bg-surface p-6 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)] sm:p-8 lg:col-span-3">
+        <Reveal delay={80} className="min-w-0 rounded-3xl border border-border bg-surface p-5 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)] sm:p-8 lg:col-span-3">
           <QuoteWizard
             categories={(categories ?? []).filter((c) => c.isActive !== false)}
             locale={locale}

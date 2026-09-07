@@ -23,6 +23,8 @@ const en = {
     backToProducts: "Back to products",
     backHome: "Back to home",
     search: "Search",
+    soundOn: "Turn sound on",
+    soundOff: "Turn sound off",
     filters: "Filters",
     clearFilters: "Clear filters",
     seeAllResults: "See all results",

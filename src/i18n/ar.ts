@@ -25,6 +25,8 @@ const ar: Dictionary = {
     backToProducts: "العودة إلى المنتجات",
     backHome: "العودة إلى الرئيسية",
     search: "بحث",
+    soundOn: "تشغيل الصوت",
+    soundOff: "كتم الصوت",
     filters: "التصفية",
     clearFilters: "مسح التصفية",
     seeAllResults: "عرض كل النتائج",
