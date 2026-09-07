@@ -325,6 +325,29 @@ export default function QuoteWizard({ categories, locale, preset, labels }: Prop
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{labels.productsHint}</p>
 
+          {/* What is already on the list, shown before the products finish
+              loading — arriving from a product page, this is the visitor's
+              confirmation that the thing they clicked is in the basket. */}
+          {pickedList.length ? (
+            <ul className="mt-4 flex flex-wrap gap-1.5">
+              {pickedList.map((p) => (
+                <li key={p.slug}>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-300 bg-brand-50 py-1 pe-1 ps-3 text-xs font-medium text-brand-700">
+                    {pick(p, "name", locale)}
+                    <button
+                      type="button"
+                      onClick={() => togglePick(p)}
+                      aria-label={`${labels.remove}: ${pick(p, "name", locale)}`}
+                      className="flex h-5 w-5 items-center justify-center rounded-full transition hover:bg-brand-200"
+                    >
+                      <Icon name="close" size={12} />
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
           <div className="relative mt-4">
             <Icon name="search" size={16} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
             <input
