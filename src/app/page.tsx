@@ -83,7 +83,7 @@ export default async function HomePage() {
     categories: (s) => {
       if (!categories.length) return null;
       return (
-        <section className="py-20">
+        <section className="py-12 sm:py-20">
           <Container>
             <SectionHeading
               eyebrow={dict.common.categories}
@@ -141,7 +141,7 @@ export default async function HomePage() {
     business_areas: (s) => {
       if (!areas.length) return null;
       return (
-        <section className="border-y border-border bg-surface py-20">
+        <section className="border-y border-border bg-surface py-12 sm:py-20">
           <Container>
             <SectionHeading
               eyebrow={dict.common.businessAreas}
@@ -182,7 +182,7 @@ export default async function HomePage() {
     best_sellers: (s) => {
       if (!featured.length) return null;
       return (
-        <section className="py-20">
+        <section className="py-12 sm:py-20">
           <Container>
             <SectionHeading
               eyebrow={dict.common.featured}
@@ -208,9 +208,9 @@ export default async function HomePage() {
       const items = activeItems(s);
       if (!items.length) return null;
       return (
-        <section className="py-20">
+        <section className="py-12 sm:py-20">
           <Container>
-            <div className="brand-panel relative overflow-hidden rounded-[32px] px-6 py-14 sm:px-10 lg:px-14">
+            <div className="brand-panel relative overflow-hidden rounded-[32px] px-5 py-10 sm:px-10 sm:py-14 lg:px-14">
               <div aria-hidden="true" className="bg-dot pointer-events-none absolute inset-0 opacity-[0.18]" />
               <div className="pointer-events-none absolute -end-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
               <div className="relative">
@@ -218,7 +218,7 @@ export default async function HomePage() {
                   <h2 className="text-2xl font-bold sm:text-[2rem] sm:leading-tight">{t(s, "title") || "Why Businesses Choose Awraquna"}</h2>
                   {t(s, "subtitle") ? <p className="mx-auto mt-3 max-w-2xl text-white/75">{t(s, "subtitle")}</p> : null}
                 </Reveal>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="card-rail grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {items.map((it, i) => (
                     <Reveal
                       key={it.id}
@@ -243,7 +243,7 @@ export default async function HomePage() {
     clients: (s) => {
       if (!clients.length) return null;
       return (
-        <section className="border-y border-border bg-surface py-20">
+        <section className="border-y border-border bg-surface py-12 sm:py-20">
           <Container>
             <SectionHeading eyebrow={dict.common.trustedBy} title={t(s, "title") || dict.common.ourClients} subtitle={t(s, "subtitle")} />
           </Container>
@@ -259,7 +259,7 @@ export default async function HomePage() {
     about_blurb: (s) => {
       if (!s) return null;
       return (
-        <section className="py-20">
+        <section className="py-12 sm:py-20">
           <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <Reveal dir="start">
               <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-700">
@@ -284,7 +284,7 @@ export default async function HomePage() {
               {/* Offset brand plate behind the photo. */}
               <span
                 aria-hidden="true"
-                className="absolute -bottom-4 -end-4 h-full w-full rounded-[28px] border border-brand-200 bg-[var(--brand-soft)]"
+                className="absolute -bottom-4 -end-4 hidden h-full w-full rounded-[28px] border border-brand-200 bg-[var(--brand-soft)] sm:block"
               />
               <AppImage
                 src={s.imageUrl}
@@ -302,7 +302,7 @@ export default async function HomePage() {
     latest_news: (s) => {
       if (!latestNews.length) return null;
       return (
-        <section className="border-t border-border bg-surface py-20">
+        <section className="border-t border-border bg-surface py-12 sm:py-20">
           <Container>
             <SectionHeading eyebrow={dict.nav.news} title={t(s, "title") || dict.common.latestNews} subtitle={t(s, "subtitle")} />
             <div className="card-rail grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -357,7 +357,7 @@ function genericBlock(locale: "en" | "ar") {
     const items = activeItems(s);
     if (!title && !body && !items.length) return null;
     return (
-      <section className="py-20">
+      <section className="py-12 sm:py-20">
         <Container>
           {title ? <SectionHeading title={title} subtitle={subtitle} /> : null}
           {s.imageUrl ? (

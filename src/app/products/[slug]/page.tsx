@@ -58,7 +58,9 @@ export default async function ProductPage({ params }: Params) {
     (u, i, arr): u is string => !!u && arr.indexOf(u) === i,
   );
   const specs = (p.specs ?? []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
-  const quoteHref = `/contact?subject=${encodeURIComponent(`${dict.actions.requestQuote}: ${name}${p.sku ? ` (${p.sku})` : ""}`)}`;
+  // The wizard resolves the slug into a pre-ticked product AND its category,
+  // so arriving here lands on the product step with the rest of the range listed.
+  const quoteHref = `/contact?product=${encodeURIComponent(p.slug)}`;
   const waDigits = (settings?.whatsapp || "").replace(/\D/g, "");
   const waHref = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(`${dict.actions.requestQuote}: ${name}${p.sku ? ` (${p.sku})` : ""}`)}` : null;
 

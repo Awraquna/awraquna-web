@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getLocale } from "@/lib/i18n";
 import { apiGet } from "@/lib/api";
-import type { Settings } from "@/lib/types";
+import type { Category, ProductDetail, Settings } from "@/lib/types";
 import { firstParam, pick } from "@/lib/utils";
 import { getDict } from "@/i18n";
-import ContactForm from "@/components/contact/ContactForm";
+import QuoteWizard, { type QuotePreset } from "@/components/contact/QuoteWizard";
 import Icon from "@/components/Icon";
 import PageHeader from "@/components/PageHeader";
 import Container from "@/components/ui/Container";
@@ -18,8 +18,36 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const sp = await searchParams;
   const locale = await getLocale();
   const dict = getDict(locale);
-  const settings = (await apiGet<Settings>("/api/public/settings", { revalidate: 120 })) ?? {};
-  const subject = firstParam(sp.subject).slice(0, 300);
+  // `?product=<slug>` comes from a product page's "Request a quote": the product
+  // and the category it belongs to are resolved here, on the server, so the
+  // wizard opens already ticked instead of flashing an empty first step.
+  const productSlug = firstParam(sp.product).slice(0, 200);
+  const [settingsData, categories, product] = await Promise.all([
+    apiGet<Settings>("/api/public/settings", { revalidate: 120 }),
+    apiGet<Category[]>("/api/public/categories", { revalidate: 300 }),
+    productSlug ? apiGet<ProductDetail>(`/api/public/products/${encodeURIComponent(productSlug)}`, { revalidate: 60 }) : null,
+  ]);
+
+  const settings = settingsData ?? {};
+  const presetCategory = firstParam(sp.category).slice(0, 200) || product?.categorySlug || "";
+  const preset: QuotePreset = {
+    categories: presetCategory ? [presetCategory] : [],
+    product: product
+      ? {
+          id: product.id,
+          slug: product.slug,
+          sku: product.sku,
+          nameEn: product.nameEn,
+          nameAr: product.nameAr,
+          imageUrl: product.imageUrl,
+          price: product.price,
+          unit: product.unit,
+          categorySlug: product.categorySlug,
+          categoryNameEn: product.categoryNameEn,
+          categoryNameAr: product.categoryNameAr,
+        }
+      : undefined,
+  };
 
   const address = pick(settings, "address", locale);
   const hours = pick(settings, "working_hours", locale);
@@ -91,18 +119,44 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         </aside>
 
         <Reveal delay={80} className="rounded-3xl border border-border bg-surface p-6 shadow-[0_24px_60px_-44px_rgb(16_24_40_/_0.45)] sm:p-8 lg:col-span-3">
-          <ContactForm
-            initialSubject={subject}
+          <QuoteWizard
+            categories={(categories ?? []).filter((c) => c.isActive !== false)}
+            locale={locale}
+            preset={preset}
             labels={{
+              steps: [dict.quote.step1, dict.quote.step2, dict.quote.step3],
+              categoriesTitle: dict.quote.categoriesTitle,
+              categoriesHint: dict.quote.categoriesHint,
+              productsTitle: dict.quote.productsTitle,
+              productsHint: dict.quote.productsHint,
+              detailsTitle: dict.quote.detailsTitle,
+              detailsHint: dict.quote.detailsHint,
+              searchProducts: dict.quote.searchProducts,
+              noProducts: dict.quote.noProducts,
+              loading: dict.quote.loading,
+              selected: dict.quote.selected,
+              next: dict.quote.next,
+              back: dict.quote.back,
+              skip: dict.quote.skip,
+              addMore: dict.quote.addMore,
+              summary: dict.quote.summary,
+              wholeCategory: dict.quote.wholeCategory,
+              qty: dict.quote.qty,
+              remove: dict.quote.remove,
+              quoteSubject: dict.quote.subject,
+              categoriesLine: dict.quote.categoriesLine,
+              productsLine: dict.quote.productsLine,
               name: dict.form.name,
               phone: dict.form.phone,
               email: dict.form.email,
               company: dict.form.company,
-              subject: dict.form.subject,
               message: dict.form.message,
+              messageHint: dict.quote.messageHint,
               send: dict.form.send,
               sending: dict.form.sending,
               success: dict.form.success,
+              successHint: dict.quote.successHint,
+              again: dict.quote.again,
               error: dict.form.error,
             }}
           />

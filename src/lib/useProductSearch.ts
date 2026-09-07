@@ -5,7 +5,17 @@ import type { ProductCard } from "./types";
 
 export type SearchHit = Pick<
   ProductCard,
-  "id" | "slug" | "sku" | "nameEn" | "nameAr" | "imageUrl" | "price" | "unit" | "categoryNameEn" | "categoryNameAr"
+  | "id"
+  | "slug"
+  | "sku"
+  | "nameEn"
+  | "nameAr"
+  | "imageUrl"
+  | "price"
+  | "unit"
+  | "categorySlug"
+  | "categoryNameEn"
+  | "categoryNameAr"
 >;
 
 type Result = { forQuery: string; items: SearchHit[]; total: number };

@@ -117,6 +117,13 @@ body {
   overflow-x: clip;
 }
 
+/* Same guard one level up: a decorative element that escapes <body> can still
+   widen the viewport on a phone and shift the whole page sideways, which in RTL
+   reads as the text being cut off at the screen edge. */
+html {
+  overflow-x: clip;
+}
+
 html[dir="rtl"] body {
   font-family: var(--font-arabic);
 }
