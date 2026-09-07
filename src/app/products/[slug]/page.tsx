@@ -11,7 +11,12 @@ import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
 import Icon from "@/components/Icon";
 
-export const dynamic = "force-dynamic";
+// NOT `dynamic = "force-dynamic"`: that is defined as fetchCache "force-no-store",
+// which re-fetched every API response on every single page view and overrode the
+// per-call revalidate windows entirely. Reading the locale cookie already makes
+// these pages dynamic; "default-cache" only says that fetches AFTER a request-time
+// API may still use the cache option they ask for.
+export const fetchCache = "default-cache";
 
 type Params = { params: Promise<{ slug: string }> };
 

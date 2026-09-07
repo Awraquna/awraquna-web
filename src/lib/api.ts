@@ -16,6 +16,54 @@ export type ApiResult<T> =
  */
 const TIMEOUT_MS = 10_000;
 
+/**
+ * The Cloudflare colo's own cache, when running on Workers.
+ *
+ * Next's data cache turned out not to engage at all here: every page reads the
+ * locale cookie, so every render is dynamic, and a dynamic render fetches afresh
+ * however the request is annotated. That meant each page view paid four or five
+ * round trips to the API in Riyadh, which is most of what made the site feel
+ * slow. This caches those GETs in the edge location that served the visitor, so
+ * only the first viewer after each TTL window waits for the origin.
+ *
+ * Bump CACHE_VERSION to invalidate everything at once.
+ */
+const CACHE_VERSION = "v1";
+type EdgeCache = { match(key: Request): Promise<Response | undefined>; put(key: Request, res: Response): Promise<void> };
+
+function edgeCache(): EdgeCache | null {
+  const c = (globalThis as { caches?: { default?: EdgeCache } }).caches;
+  return c?.default ?? null;
+}
+
+/** GET `url`, served from the colo cache when a fresh copy is already there. */
+async function cachedFetch(url: string, ttl: number): Promise<Response> {
+  const cache = edgeCache();
+  if (!cache || ttl <= 0) {
+    return fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" });
+  }
+
+  // The cache is keyed by URL, so the version prefix has to live in it.
+  const key = new Request(`${url}${url.includes("?") ? "&" : "?"}__c=${CACHE_VERSION}`, { method: "GET" });
+  const hit = await cache.match(key);
+  if (hit) return hit;
+
+  const res = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" });
+  if (res.ok) {
+    // A copy with our own TTL; the original body is still untouched for the caller.
+    const body = await res.clone().arrayBuffer();
+    const store = new Response(body, {
+      status: res.status,
+      headers: {
+        "Content-Type": res.headers.get("Content-Type") ?? "application/json",
+        "Cache-Control": `public, s-maxage=${Math.round(ttl)}`,
+      },
+    });
+    await cache.put(key, store);
+  }
+  return res;
+}
+
 /** Raw GET; never throws. `status` is 0 when the API is unreachable or too slow. */
 export async function apiFetch<T>(path: string, opts: { revalidate?: number } = {}): Promise<ApiResult<T>> {
   // How long (seconds) the site caches API responses.
@@ -25,12 +73,13 @@ export async function apiFetch<T>(path: string, opts: { revalidate?: number } = 
   const envSeconds = envValue !== undefined && envValue !== "" ? Number(envValue) : NaN;
   const revalidate = Number.isFinite(envSeconds) ? envSeconds : (opts.revalidate ?? 60);
   try {
-    const res = await fetch(`${API_BASE}${path}`, {
-      headers: { Accept: "application/json" },
-      next: { revalidate },
-      // Aborts rather than hanging; the catch below turns it into an empty state.
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
+    // The timeout is a RACE rather than an AbortSignal on the request: a signal
+    // makes the response unusable for the cache write below, and losing the race
+    // gives the same empty state the abort used to.
+    const res = await Promise.race([
+      cachedFetch(`${API_BASE}${path}`, revalidate),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("api timeout")), TIMEOUT_MS)),
+    ]);
     if (!res.ok) return { ok: false, status: res.status, data: null };
     const data = (await res.json()) as T;
     return { ok: true, status: res.status, data };

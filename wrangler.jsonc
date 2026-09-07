@@ -8,6 +8,13 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // Next's data cache. Without it every page view re-fetches the whole API from
+  // the origin; with it, a response is fetched once per revalidate window and
+  // served from the edge for everyone after that.
+  "kv_namespaces": [
+    { "binding": "NEXT_INC_CACHE_KV", "id": "d1e12784e53343b7bfaba51b83bc99c4" }
+  ],
+
   "observability": {
     "enabled": true
   },

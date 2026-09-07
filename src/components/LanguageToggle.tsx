@@ -70,14 +70,17 @@ export default function LanguageToggle({ locale, label, variant = "pill", classN
     if (busy || l === locale) return;
     setTarget(l);
 
+    // The cookie is not httpOnly, so writing it here is instant. Round-tripping
+    // to /api/locale first added a whole request to the critical path of every
+    // language switch, before the re-render could even start.
     try {
+      setLocaleCookie(l);
+    } catch {
       await fetch("/api/locale", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale: l }),
       });
-    } catch {
-      setLocaleCookie(l);
     }
 
     const refresh = () =>

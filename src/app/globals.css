@@ -314,6 +314,16 @@ html[dir="rtl"] body {
 .reveal-down { transform: translate3d(0, -26px, 0); }
 .reveal-start { transform: translate3d(-26px, 0, 0); }
 [dir="rtl"] .reveal-start { transform: translate3d(26px, 0, 0); }
+/* On a phone there is no room to slide sideways from: the block is the full
+   width of the screen, so a 26px horizontal offset hangs off the edge and gets
+   clipped — which in Arabic reads as the text being cut off down the whole
+   right-hand side. Below `sm` these blocks rise like every other one. */
+@media (max-width: 639.98px) {
+  .reveal-start,
+  [dir="rtl"] .reveal-start {
+    transform: translate3d(0, 26px, 0);
+  }
+}
 .reveal-scale { transform: scale(0.94); }
 .reveal-fade { transform: none; }
 .reveal-in {
